@@ -3,11 +3,12 @@ package usecase
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"time"
+
 	v "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/mariajdab/pay-gateway/internal/entity"
 	"github.com/mariajdab/pay-gateway/internal/payProcessor"
-	"time"
 )
 
 const (
@@ -77,11 +78,14 @@ func (c *processorUC) SaveCustomerCardInfo(card entity.Card) {
 
 }
 
+// isCardExpired checks if the card expiration date is valid
 func isCardExpired(expDate time.Time) bool {
 	now := time.Now()
 	now.Format("2006-01-02")
 
-	if expDate.Before(now) || expDate.Equal(now) {
+	maxDateAllowed, _ := time.Parse("2006-01-02", "2050-01-01")
+
+	if expDate.Before(now) || expDate.Equal(now) || expDate.After(maxDateAllowed) {
 		return true
 	}
 	return false

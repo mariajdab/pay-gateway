@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mariajdab/pay-gateway/internal/entity"
@@ -35,7 +36,7 @@ func (p *paymentProcessorRepo) PaymentCardInfoExists(cardTk string) (bool, error
 	ctx := context.Background()
 
 	if err := p.conn.QueryRow(ctx, `
-    SELECT EXISTS(SELECT 1 FROM card_processor WHERE card_token = $1)
+    	SELECT EXISTS(SELECT 1 FROM card_processor WHERE card_token = $1)
   `, cardTk).Scan(&exists); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return false, nil
@@ -66,7 +67,7 @@ func (p *paymentProcessorRepo) GetPaymentTxnStatus(txnUUID string) (string, erro
 	ctx := context.Background()
 
 	if err := p.conn.QueryRow(ctx, `
-    SELECT status_txn FROM payment_processor_hist WHERE txn_uuid = $1 LIMIT 1
+    	SELECT status_txn FROM payment_processor_hist WHERE txn_uuid = $1 LIMIT 1
   `, txnUUID).Scan(&status); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return "", nil
@@ -94,7 +95,7 @@ func (p *paymentProcessorRepo) GetPaymentCardBankUUID(cardUUIDtk string) (id str
 	ctx := context.Background()
 
 	if err := p.conn.QueryRow(ctx, `
-    SELECT card_bank_uuid FROM card_processor WHERE card_uuid_token = $1 LIMIT 1
+    	SELECT card_bank_uuid FROM card_processor WHERE card_uuid_token = $1 LIMIT 1
   `, cardUUIDtk).Scan(&cardUUIDbank); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return "", nil
