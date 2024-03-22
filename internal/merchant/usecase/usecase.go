@@ -14,27 +14,25 @@ type merchantUC struct {
 }
 
 func NewMerchantUC(merchantR merchant.Repository) merchant.UseCase {
-	return &merchantUC{merchantRepo: merchantR}
+	return &merchantUC{
+		merchantRepo: merchantR,
+	}
 }
 
-func (c *merchantUC) SavePaymentDetail(pyd entity.PurchasePayment) error {
-	paymtCode, err := generateRandomStr()
-
+func (muc *merchantUC) CreateMerchant(merc entity.Merchant) error {
+	// generate a merchant code
+	merchantCode, err := generateRandomStr()
 	if err != nil {
-		return errors.New("could not generate payment code")
+		return errors.New("could not generate merchant code")
 	}
 
-	return c.merchantRepo.AddPPurchasePayment(pyd, paymtCode)
+	merc.MerchantCode = merchantCode
+
+	return muc.merchantRepo.AddMerchant(merc)
 }
 
-func (c *merchantUC) RetrievePaymentDetail(paymtCode string) (entity.PurchasePayment, error) {
-	paymentDetail, err := c.RetrievePaymentDetail(paymtCode)
-
-	if err != nil {
-		return entity.PurchasePayment{}, err
-	}
-
-	return paymentDetail, nil
+func (muc *merchantUC) IsValidMerchant(code string) (bool, error) {
+	return muc.merchantRepo.MerchantCodeExists(code)
 }
 
 func generateRandomStr() (string, error) {
