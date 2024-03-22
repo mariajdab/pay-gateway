@@ -8,37 +8,42 @@ type Customer struct {
 }
 
 type Card struct {
-	Number      string    `json:"card_number"`
-	Last4Digits int       `json:"last_4_digits"`
-	ExpDate     time.Time `json:"exp_date"`
-	Address     string    `json:"address"`
+	Number  string    `json:"card_number"`
+	CVV     uint16    `json:"cvv"`
+	ExpDate time.Time `json:"exp_date"`
+	Address string    `json:"address"`
 }
 
 type Merchant struct {
-	MerchantID   int    `json:"merchant_id"`
 	MerchantName string `json:"merchant_name"`
 	MerchantCode string `json:"merchant_code"`
 }
 
-type Transaction struct {
-	TxnUUID       string
+type PaymentRequest struct {
 	BillingAmount float32
 	Currency      string
 	Country       string
-	CardUUIDtk    string
+	CardInfo      Card
 	CratedAt      time.Time
-	UpdatedAt     time.Time
 	MerchantCode  string
-	Status        string
+	CustomerData  Customer
+}
+
+type Transaction struct {
+	TxnUUID      string
+	UpdatedAt    time.Time
+	MerchantCode string
+	Status       string
+	PaymentReq   PaymentRequest
 }
 
 type Account struct {
-	ID              int
-	CustomerID      int
-	AccountCurrency string
-	Balance         float32
-	Status          string
-	CardInfo        Card
+	ID         int
+	CustomerID int
+	Currency   string
+	Balance    float32
+	Status     string
+	CardUUID   string
 }
 
 type PurchasePayment struct {
