@@ -3,10 +3,15 @@ package entity
 import "time"
 
 type Customer struct {
-	Name       string `json:"name"`
-	LastName   string `json:"last_name"`
-	Email      string `json:"email"`
-	CardNumber string `json:"card_number"`
+	FullName string `json:"full_name"`
+	Email    string `json:"email"`
+}
+
+type Card struct {
+	Number      string    `json:"card_number"`
+	Last4Digits int       `json:"last_4_digits"`
+	ExpDate     time.Time `json:"exp_date"`
+	Address     string    `json:"address"`
 }
 
 type Merchant struct {
@@ -16,14 +21,15 @@ type Merchant struct {
 }
 
 type Transaction struct {
-	ID                int
-	TransactionStatus string
-	BillingAmount     float32
-	Currency          string
-	Country           string
-	Time              time.Time
-	MerchantData      Merchant
-	CustomerData      Customer
+	TxnUUID       string
+	BillingAmount float32
+	Currency      string
+	Country       string
+	CardUUIDtk    string
+	CratedAt      time.Time
+	UpdatedAt     time.Time
+	MerchantCode  string
+	Status        string
 }
 
 type Account struct {
@@ -32,4 +38,13 @@ type Account struct {
 	AccountCurrency string
 	Balance         float32
 	Status          string
+	CardInfo        Card
+}
+
+type PurchasePayment struct {
+	BillingAmount float32
+	Currency      string
+	Country       string
+	Time          time.Time
+	CustomerData  Customer
 }
