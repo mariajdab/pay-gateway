@@ -3,7 +3,7 @@ package payProcessor
 import "github.com/mariajdab/pay-gateway/internal/entity"
 
 type UseCase interface {
-	ValidatePaymentReq(txn entity.Transaction)
+	ValidatePaymentReq(paymtReq entity.PaymentRequest) (string, error)
 	SaveCustomerCardInfo(card entity.Card)
-	GetPaymentFinalStatus(txn entity.Transaction)
+	//GetPaymentFinalStatus(txn entity.Transaction)
 }
