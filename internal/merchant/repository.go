@@ -3,6 +3,6 @@ package merchant
 import "github.com/mariajdab/pay-gateway/internal/entity"
 
 type Repository interface {
-	AddPPurchasePayment(p entity.PurchasePayment, paymtCode string) error
-	GetPurchasePayment(paymtCode string) (entity.PurchasePayment, error)
+	AddMerchant(p entity.Merchant) error
+	MerchantCodeExists(code string) (bool, error)
 }
