@@ -20,11 +20,10 @@ func NewMerchantRepo(conn *pgxpool.Pool) merchant.Repository {
 func (m *merchantRepo) AddMerchant(p entity.Merchant) error {
 	ctx := context.Background()
 
-	// ideally we can hava a customers table with the fullName, email and address info
 	_, err := m.conn.Exec(ctx, `
 		INSERT INTO merchants (name, code)
 		VALUES ($1, $2)
-			 `,
+		`,
 		p.MerchantName,
 		p.MerchantCode)
 
@@ -37,8 +36,8 @@ func (m *merchantRepo) MerchantCodeExists(code string) (bool, error) {
 	ctx := context.Background()
 
 	if err := m.conn.QueryRow(ctx, `
-    SELECT EXISTS(SELECT 1 FROM merchants WHERE code = $1)
-  `, code).Scan(&exists); err != nil {
+		SELECT EXISTS(SELECT 1 FROM merchants WHERE code = $1)
+		`, code).Scan(&exists); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return false, nil
 		}
