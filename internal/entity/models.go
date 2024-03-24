@@ -3,20 +3,22 @@ package entity
 import "time"
 
 type Customer struct {
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
+	FirstName string
+	LastName  string
+	Email     string
+	Address   string
+	Country   string
 }
 
 type Card struct {
-	Number  string    `json:"card_number"`
-	CVV     uint16    `json:"cvv"`
-	ExpDate time.Time `json:"exp_date"`
-	Address string    `json:"address"`
+	Number  string // this will be saved as a token
+	CVV     uint16
+	ExpDate time.Time
 }
 
 type Merchant struct {
-	MerchantName string `json:"merchant_name"`
-	MerchantCode string `json:"merchant_code"`
+	Name string
+	Code string
 }
 
 type PaymentRequest struct {
@@ -25,31 +27,23 @@ type PaymentRequest struct {
 	Country       string
 	CardInfo      Card
 	CratedAt      time.Time
-	MerchantCode  string
 	CustomerData  Customer
 }
 
 type Transaction struct {
-	TxnUUID      string
-	UpdatedAt    time.Time
-	MerchantCode string
-	Status       string
-	PaymentReq   PaymentRequest
-}
-
-type Account struct {
-	ID         int
-	CustomerID int
-	Currency   string
-	Balance    float32
-	Status     string
-	CardUUID   string
-}
-
-type PurchasePayment struct {
+	TxnUUID       string
 	BillingAmount float32
+	CreatedAt     time.Time
+	Status        string
 	Currency      string
-	Country       string
-	Time          time.Time
+	CardTk        string
+	MerchantCode  string
+}
+
+type PaymentInfo struct {
+	BillingAmount float32
+	Status        string
+	Currency      string
+	CreateAt      time.Time
 	CustomerData  Customer
 }

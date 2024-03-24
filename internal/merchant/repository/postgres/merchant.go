@@ -18,15 +18,15 @@ func NewMerchantRepo(conn *pgxpool.Pool) merchant.Repository {
 	return &merchantRepo{conn: conn}
 }
 
-func (m *merchantRepo) AddMerchant(p entity.Merchant) error {
+func (m *merchantRepo) AddMerchant(merchant entity.Merchant) error {
 	ctx := context.Background()
 
 	_, err := m.conn.Exec(ctx, `
 		INSERT INTO merchants (name, code)
 		VALUES ($1, $2)
 		`,
-		p.MerchantName,
-		p.MerchantCode)
+		merchant.Name,
+		merchant.Code)
 
 	return err
 }
