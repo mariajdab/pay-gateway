@@ -35,6 +35,8 @@ func RegisterHTTPEndpoints(g *gin.Engine, handler *Handler) {
 	}
 }
 
+// checkTxn handle the simulation logic to check if a transaction in the bank
+// is approved, declined or pending for a card associated with an uuid
 func (h *Handler) checkTxn(ctx *gin.Context) {
 	cardUUID := ctx.Param("card_uuid")
 	if cardUUID == "" {
@@ -42,16 +44,25 @@ func (h *Handler) checkTxn(ctx *gin.Context) {
 		return
 	}
 
-	status := getTxnStatus(cardUUID)
+	checkTxRp := CheckTxResp{}
+	lastCharCard := string(cardUUID[len(cardUUID)-1])
 
-	statusTxn := CheckTxResp{status}
+	if isLastCharacterInt(lastCharCard) {
+		if isOddNumber(lastCharCard) {
+			checkTxRp.Status = pending // pending for odd numbers
+		} else {
+			checkTxRp.Status = declined // decline for even numbers
+		}
+	} else { // if the last character in the cardUUID is a letter, then approve the txn
+		checkTxRp.Status = approved
+	}
 
-	ctx.JSON(http.StatusOK, statusTxn)
+	ctx.JSON(http.StatusOK, checkTxRp)
 
 }
 
 // validateCard handle the simulation logic to check if a card
-// is a valid bank card and return the cardUUID for better communication
+// is a valid bank card, and return the cardUUID for better communication
 // with the payment gateway
 func (h *Handler) validateCard(ctx *gin.Context) {
 	card := new(entity.Card)
@@ -74,26 +85,10 @@ func (h *Handler) validateCard(ctx *gin.Context) {
 	if lastNumb >= 5 {
 		cardResp.CardUUID = uuid.New().String()
 		cardResp.Valid = true
-
-		ctx.JSON(http.StatusOK, cardResp)
 	} else {
 		cardResp.Valid = false
-		ctx.JSON(http.StatusOK, cardResp)
 	}
-}
-
-func getTxnStatus(cardUUID string) uint16 {
-	lastCharCard := string(cardUUID[len(cardUUID)-1])
-
-	if isLastCharacterInt(lastCharCard) {
-		if isOddNumber(lastCharCard) {
-			return pending
-		} else {
-			return declined
-		}
-	}
-	// if the last character in the uuid is a letter, then approve the txn
-	return approved
+	ctx.JSON(http.StatusOK, cardResp)
 }
 
 func isLastCharacterInt(lastChar string) bool {
