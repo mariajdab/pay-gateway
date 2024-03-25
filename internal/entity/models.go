@@ -7,6 +7,17 @@ import (
 	v "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+const (
+	// merchant validation
+	AllowedMerchant = "merchant-allowed"
+	DeniedMerchant  = "merchant-not-allowed"
+
+	// payment request statuses
+	PendingBankValidation = "request-bank-to-confirm-card"
+	SuccessfulValidation  = "pre-authorized-payment-req"
+	FailedValidation      = "payment-req-not-authorized"
+)
+
 type Customer struct {
 	FirstName string
 	LastName  string
@@ -19,6 +30,11 @@ type Card struct {
 	Number  string // this will be saved as a token
 	CVV     string
 	ExpDate string
+}
+
+type CardData struct {
+	CardInfo  Card
+	OwnerInfo Customer
 }
 
 type Merchant struct {
@@ -50,6 +66,12 @@ type PaymentInfo struct {
 	Currency      string
 	CreateAt      time.Time
 	CustomerData  Customer
+}
+
+type TxnInfo struct {
+	CardUUID string
+	Amount   float32
+	Currency string
 }
 
 func (c Card) Validate() error {
