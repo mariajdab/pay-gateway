@@ -62,8 +62,8 @@ func TestValidateCardOK(t *testing.T) {
 	cardBody := &entity.Card{
 		// the final number is >= 5, so the card should be valid
 		Number:  "28942958",
-		CVV:     123,
-		ExpDate: time.Now().Add(time.Hour * 24 * 10),
+		CVV:     "123",
+		ExpDate: time.Now().Add(time.Hour * 24 * 10).Format(time.DateOnly),
 	}
 
 	body, err := json.Marshal(cardBody)
@@ -95,8 +95,8 @@ func TestValidateCardWrong(t *testing.T) {
 	cardBody := &entity.Card{
 		// the final number is >= 5, so the card should be valid
 		Number:  "28942954",
-		CVV:     123,
-		ExpDate: time.Now().Add(time.Hour * 24 * 10),
+		CVV:     "123",
+		ExpDate: time.Now().Add(time.Hour * 24 * 10).Format(time.DateOnly),
 	}
 
 	body, err := json.Marshal(cardBody)
