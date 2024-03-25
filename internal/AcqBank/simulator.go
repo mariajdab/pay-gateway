@@ -14,7 +14,7 @@ const (
 	pending  = 8585
 )
 
-type CheckTxResp struct {
+type TxnResp struct {
 	Status uint16 `json:"status_txn"`
 }
 
@@ -29,8 +29,8 @@ func RegisterHTTPEndpoints(g *gin.Engine, handler *Handler) {
 
 	payment := g.Group("/bank-sim.com")
 	{
-		payment.GET("/cards/:card_uuid", handler.checkTxn)
-		payment.GET("/cards/", handler.validateCard)
+		payment.POST("/transactions/validate", handler.checkTxn)
+		payment.POST("/cards/validate", handler.validateCard)
 
 	}
 }
@@ -38,13 +38,17 @@ func RegisterHTTPEndpoints(g *gin.Engine, handler *Handler) {
 // checkTxn handle the simulation logic to check if a transaction in the bank
 // is approved, declined or pending for a card associated with an uuid
 func (h *Handler) checkTxn(ctx *gin.Context) {
-	cardUUID := ctx.Param("card_uuid")
-	if cardUUID == "" {
-		ctx.AbortWithStatus(http.StatusBadRequest)
-		return
+	// TxnInfo have the necessary information to
+	// check if the account associated with the card
+	// has enough balance to approve or not the txn
+	txnInfo := new(entity.TxnInfo)
+	if err := ctx.BindJSON(txnInfo); err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
 	}
+	// amount info is not used in the simulation, just cardUUID
+	cardUUID := txnInfo.CardUUID
 
-	checkTxRp := CheckTxResp{}
+	checkTxRp := TxnResp{}
 	lastCharCard := string(cardUUID[len(cardUUID)-1])
 
 	if isLastCharacterInt(lastCharCard) {
@@ -65,11 +69,13 @@ func (h *Handler) checkTxn(ctx *gin.Context) {
 // is a valid bank card, and return the cardUUID for better communication
 // with the payment gateway
 func (h *Handler) validateCard(ctx *gin.Context) {
-	card := new(entity.Card)
-	if err := ctx.BindJSON(card); err != nil {
+	// a bank need the card info but also the owner info
+	cardData := new(entity.CardData)
+	if err := ctx.BindJSON(cardData); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 	}
 
+	card := cardData.CardInfo
 	// get the last number of the card
 	lastNumberStr := string(card.Number[len(card.Number)-1])
 	lastNumb, err := strconv.Atoi(lastNumberStr)

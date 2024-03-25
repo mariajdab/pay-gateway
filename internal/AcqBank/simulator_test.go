@@ -18,15 +18,25 @@ func TestCheckTxnApproved(t *testing.T) {
 	RegisterHTTPEndpoints(r, &Handler{})
 
 	w := httptest.NewRecorder()
-	// the cardUUID final char is a letter, so the txn is approved
-	req, _ := http.NewRequest("GET", "/bank-sim.com/cards/3e2a16c7-002b-4e1a-9f12-75d4bfd9832c", nil)
+
+	txnInfo := entity.TxnInfo{
+		// the cardUUID final char is a letter, so the txn is approved
+		CardUUID: "3e2a16c7-002b-4e1a-9f12-75d4bfd9832c",
+		Amount:   120.4,
+		Currency: "USD",
+	}
+
+	body, err := json.Marshal(&txnInfo)
+	assert.NoError(t, err)
+
+	req, _ := http.NewRequest("POST", "/bank-sim.com/transactions/validate", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
 
-	statusTx := &CheckTxResp{}
+	statusTx := &TxnResp{}
 
-	err := json.Unmarshal(w.Body.Bytes(), statusTx)
+	err = json.Unmarshal(w.Body.Bytes(), statusTx)
 	assert.Equal(t, err, nil)
 
 	// 2020 status approved
@@ -39,15 +49,25 @@ func TestCheckTxnDeclined(t *testing.T) {
 	RegisterHTTPEndpoints(r, &Handler{})
 
 	w := httptest.NewRecorder()
-	// the cardUUID final char is an int and is even, so the txn is declined
-	req, _ := http.NewRequest("GET", "/bank-sim.com/cards/3e2a16c7-002b-4e1a-9f12-75d4bfd98322", nil)
+
+	txnInfo := entity.TxnInfo{
+		// the cardUUID final char is an int and is even, so the txn is declined
+		CardUUID: "3e2a16c7-002b-4e1a-9f12-75d4bfd98324",
+		Amount:   457.8,
+		Currency: "USD",
+	}
+
+	body, err := json.Marshal(&txnInfo)
+	assert.NoError(t, err)
+
+	req, _ := http.NewRequest("POST", "/bank-sim.com/transactions/validate", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
 
-	statusTx := &CheckTxResp{}
+	statusTx := &TxnResp{}
 
-	err := json.Unmarshal(w.Body.Bytes(), statusTx)
+	err = json.Unmarshal(w.Body.Bytes(), statusTx)
 	assert.Equal(t, err, nil)
 
 	// 9999 status declined
@@ -59,18 +79,29 @@ func TestValidateCardOK(t *testing.T) {
 
 	RegisterHTTPEndpoints(r, &Handler{})
 
-	cardBody := &entity.Card{
+	card := entity.Card{
 		// the final number is >= 5, so the card should be valid
 		Number:  "28942958",
 		CVV:     "123",
 		ExpDate: time.Now().Add(time.Hour * 24 * 10).Format(time.DateOnly),
 	}
 
-	body, err := json.Marshal(cardBody)
+	ownerCard := entity.Customer{
+		FirstName: "luis",
+		LastName:  "paez",
+		Address:   "calle 1",
+	}
+
+	cardBody := entity.CardData{
+		CardInfo:  card,
+		OwnerInfo: ownerCard,
+	}
+
+	body, err := json.Marshal(&cardBody)
 	assert.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/bank-sim.com/cards/", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "/bank-sim.com/cards/validate", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
@@ -87,23 +118,34 @@ func TestValidateCardOK(t *testing.T) {
 	assert.Equal(t, cardResp.Valid, true)
 }
 
-func TestValidateCardWrong(t *testing.T) {
+func TestValidateCardInvalid(t *testing.T) {
 	r := gin.Default()
 
 	RegisterHTTPEndpoints(r, &Handler{})
 
-	cardBody := &entity.Card{
-		// the final number is >= 5, so the card should be valid
+	card := entity.Card{
+		// the final number is >= 5, so the card should be invalid
 		Number:  "28942954",
 		CVV:     "123",
 		ExpDate: time.Now().Add(time.Hour * 24 * 10).Format(time.DateOnly),
 	}
 
-	body, err := json.Marshal(cardBody)
+	ownerCard := entity.Customer{
+		FirstName: "luis",
+		LastName:  "paez",
+		Address:   "calle 1",
+	}
+
+	cardBody := entity.CardData{
+		CardInfo:  card,
+		OwnerInfo: ownerCard,
+	}
+
+	body, err := json.Marshal(&cardBody)
 	assert.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/bank-sim.com/cards/", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "/bank-sim.com/cards/validate", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
