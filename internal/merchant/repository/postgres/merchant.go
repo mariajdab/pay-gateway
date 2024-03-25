@@ -14,7 +14,7 @@ type merchantRepo struct {
 	conn *pgxpool.Pool
 }
 
-func NewMerchantRepo(conn *pgxpool.Pool) merchant.Repository {
+func NewMerchantRepo(conn *pgxpool.Pool) merchant.RepositoryMerchant {
 	return &merchantRepo{conn: conn}
 }
 

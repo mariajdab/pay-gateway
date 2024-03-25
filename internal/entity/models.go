@@ -1,6 +1,11 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-ozzo/ozzo-validation/is"
+	v "github.com/go-ozzo/ozzo-validation/v4"
+)
 
 type Customer struct {
 	FirstName string
@@ -12,8 +17,8 @@ type Customer struct {
 
 type Card struct {
 	Number  string // this will be saved as a token
-	CVV     uint16
-	ExpDate time.Time
+	CVV     string
+	ExpDate string
 }
 
 type Merchant struct {
@@ -24,7 +29,6 @@ type Merchant struct {
 type PaymentRequest struct {
 	BillingAmount float32
 	Currency      string
-	Country       string
 	CardInfo      Card
 	CratedAt      time.Time
 	CustomerData  Customer
@@ -46,4 +50,22 @@ type PaymentInfo struct {
 	Currency      string
 	CreateAt      time.Time
 	CustomerData  Customer
+}
+
+func (c Card) Validate() error {
+	return v.ValidateStruct(&c,
+		v.Field(&c.Number, v.Required, is.CreditCard),         // make a simple credit number validation
+		v.Field(&c.CVV, v.Required, v.Length(3, 3)),           // cvv should be of 3 characters
+		v.Field(&c.ExpDate, v.Required, v.Date("2006-01-02")), // should have a format date
+	)
+}
+
+func (c Customer) Validate() error {
+	return v.ValidateStruct(&c,
+		v.Field(&c.Email, v.Required, is.Email),            // make a simple email validation
+		v.Field(&c.FirstName, v.Required, v.Length(2, 10)), // min and max length limitation
+		v.Field(&c.LastName, v.Required, v.Length(2, 12)),  // min and max length limitation
+		v.Field(&c.Address, v.Required, v.Length(4, 18)),   // // min and max length limitation
+		v.Field(&c.Country, v.Required, is.CountryCode3),   // countryCode3 eg: VEN, MEX, COL
+	)
 }

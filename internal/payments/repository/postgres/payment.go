@@ -3,18 +3,18 @@ package postgres
 import (
 	"context"
 	"errors"
+	"github.com/mariajdab/pay-gateway/internal/payments"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mariajdab/pay-gateway/internal/entity"
-	"github.com/mariajdab/pay-gateway/internal/payments"
 )
 
 type paymentRepo struct {
 	conn *pgxpool.Pool
 }
 
-func NewPaymentProcessor(conn *pgxpool.Pool) payments.Repository {
+func NewPaymentProcessor(conn *pgxpool.Pool) payments.RepositoryPayment {
 	return &paymentRepo{conn: conn}
 }
 

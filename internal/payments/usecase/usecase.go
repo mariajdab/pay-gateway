@@ -7,13 +7,12 @@ import (
 	"time"
 
 	v "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/mariajdab/pay-gateway/internal/entity"
 	"github.com/mariajdab/pay-gateway/internal/payments"
 )
 
 const (
-	// currency
+	// currencies we currently accept
 	currencyUSD = "USD"
 
 	// payment request statuses
@@ -24,11 +23,11 @@ const (
 )
 
 type paymentUC struct {
-	paymentRepo payments.Repository
-	cardRepo    cards.Repository
+	paymentRepo payments.RepositoryPayment
+	cardRepo    cards.RepositoryCard
 }
 
-func NewpaymentUC(py payments.Repository, c cards.Repository) payments.UseCase {
+func NewpaymentUC(py payments.RepositoryPayment, c cards.RepositoryCard) payments.UseCasePayment {
 	return &paymentUC{
 		paymentRepo: py,
 		cardRepo:    c,
@@ -38,26 +37,26 @@ func NewpaymentUC(py payments.Repository, c cards.Repository) payments.UseCase {
 func (p *paymentUC) ValidatePaymentReq(paymtReq entity.PaymentRequest) (string, error) {
 	if err := v.ValidateStruct(&paymtReq,
 		// Card validation
-		v.Field(&paymtReq.CardInfo.Number, v.Required, is.CreditCard),       // make a simple card number validation
-		v.Field(&paymtReq.CardInfo.CVV, v.Required, v.Min(000), v.Max(999)), // cvv between 000 and 999
-		v.Field(&paymtReq.CardInfo.ExpDate, v.Required, v.Date("2006-01-02")),
+		v.Field(&paymtReq.CardInfo), // for more detail see validate method for entity.Card
+
 		// General payment req validation
 		v.Field(&paymtReq.BillingAmount, v.Required, v.Min(0.01)),  // a valid amount must be >= 0.01
 		v.Field(&paymtReq.Currency, v.Required, v.In(currencyUSD)), // at the moment we only accept USD as currency
-		v.Field(&paymtReq.CratedAt, v.Required, v.Date("2006-01-02")),
-		v.Field(&paymtReq.Country, v.Required, is.CountryCode3), // countryCode3 eg: VEN, MEX, COL
+		v.Field(&paymtReq.CratedAt, v.Required),
+
 		// Customer validation
-		v.Field(&paymtReq.CustomerData.Email, v.Required, is.Email), // make a simple email validation
-		v.Field(&paymtReq.CustomerData.FirstName, v.Required),
-		v.Field(&paymtReq.CustomerData.LastName, v.Required),
-		v.Field(&paymtReq.CustomerData.Address, v.Required),
+		v.Field(&paymtReq.CustomerData), // for more detail see validate method for entity.Customer
 	); err != nil {
 		return failedValidation, err
 	}
 
 	// check if the card is expired
-	expDate := paymtReq.CardInfo.ExpDate
-	if isCardExpired(expDate) {
+	expDateT, err := time.Parse("2006-01-02", paymtReq.CardInfo.ExpDate)
+	if err != nil {
+		return unableValidation, err
+	}
+
+	if isCardExpired(expDateT) {
 		return failedValidation, nil
 	}
 

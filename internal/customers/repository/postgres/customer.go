@@ -12,7 +12,7 @@ type customerRepo struct {
 	conn *pgxpool.Pool
 }
 
-func NewCustomerRepo(conn *pgxpool.Pool) customers.Repository {
+func NewCustomerRepo(conn *pgxpool.Pool) customers.RepositoryCustomer {
 	return &customerRepo{conn: conn}
 }
 

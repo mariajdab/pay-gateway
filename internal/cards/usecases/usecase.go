@@ -5,10 +5,10 @@ import (
 )
 
 type cardUC struct {
-	cardRepo cards.Repository
+	cardRepo cards.RepositoryCard
 }
 
-func NewCardUC(c cards.Repository) cards.UseCase {
+func NewCardUC(c cards.RepositoryCard) cards.UseCase {
 	return &cardUC{
 		cardRepo: c,
 	}

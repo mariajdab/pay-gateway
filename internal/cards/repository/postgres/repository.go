@@ -12,7 +12,7 @@ type cardRepo struct {
 	conn *pgxpool.Pool
 }
 
-func NewCardRepo(conn *pgxpool.Pool) cards.Repository {
+func NewCardRepo(conn *pgxpool.Pool) cards.RepositoryCard {
 	return &cardRepo{conn: conn}
 }
 

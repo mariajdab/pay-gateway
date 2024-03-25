@@ -16,10 +16,10 @@ const (
 )
 
 type merchantUC struct {
-	merchantRepo merchant.Repository
+	merchantRepo merchant.RepositoryMerchant
 }
 
-func NewMerchantUC(merchantR merchant.Repository) merchant.UseCase {
+func NewMerchantUC(merchantR merchant.RepositoryMerchant) merchant.UseCaseMerchant {
 	return &merchantUC{
 		merchantRepo: merchantR,
 	}

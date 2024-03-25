@@ -2,7 +2,7 @@ package merchant
 
 import "github.com/mariajdab/pay-gateway/internal/entity"
 
-type Repository interface {
+type RepositoryMerchant interface {
 	AddMerchant(p entity.Merchant) error
 	MerchantCodeExists(code string) (bool, error)
 }
