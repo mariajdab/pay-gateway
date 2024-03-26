@@ -60,11 +60,12 @@ type Transaction struct {
 }
 
 type PaymentInfo struct {
-	BillingAmount float32
-	Status        string
-	Currency      string
-	CreateAt      time.Time
-	CustomerData  Customer
+	BillingAmount float32   `json:"billing_amount"`
+	Status        string    `json:"status"`
+	Currency      string    `json:"currency"`
+	CreateAt      time.Time `json:"create_at"`
+	MerchantCode  string    `json:"-"`
+	CustomerData  Customer  `json:"customer_data"`
 }
 
 type TxnInfo struct {

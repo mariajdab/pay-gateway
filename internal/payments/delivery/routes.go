@@ -18,6 +18,7 @@ func RegisterHandler(g *gin.Engine,
 
 	proc := g.Group("/processor-pay")
 	{
-		proc.POST("/:merchant_code/payment", h.ProcessPayment)
+		proc.POST("/:merchant_code/payments", h.ProcessPayment)
+		proc.GET("/:merchant_code/payments/:payment_uuid", h.RetrievePayment)
 	}
 }

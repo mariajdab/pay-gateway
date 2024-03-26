@@ -6,4 +6,5 @@ type RepositoryPayment interface {
 	AddPaymentTxnHistory(txn entity.Transaction) error
 	GetPaymentTxnStatus(txnUUID string) (string, error)
 	UpdatePaymentTxnStatus(txnUUID, status string) error
+	GetPaymentDetailByTxUUID(txUUID string) (entity.PaymentInfo, error)
 }

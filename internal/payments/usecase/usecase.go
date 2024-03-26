@@ -87,6 +87,10 @@ func (p *paymentUC) SavePaymentInfo(txn entity.Transaction) (string, error) {
 	return txn.TxnUUID, nil
 }
 
+func (p *paymentUC) PaymentDetailByTxnUUID(txnUUID string) (entity.PaymentInfo, error) {
+	return p.paymentRepo.GetPaymentDetailByTxUUID(txnUUID)
+}
+
 // isCardExpired checks if the card expiration date is valid
 func isCardExpired(expDate time.Time) bool {
 	now := time.Now()

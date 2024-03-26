@@ -163,6 +163,35 @@ func (h *Handler) ProcessPayment(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+func (h *Handler) RetrievePayment(ctx *gin.Context) {
+	merchantCode := ctx.Param("merchant_code")
+	fmt.Println(merchantCode, "mercado")
+
+	paymentUUID := ctx.Param("payment_uuid")
+	fmt.Println(merchantCode, "mercado")
+
+	if merchantCode == "" || paymentUUID == "" {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	paymentDetail, err := h.ucPayment.PaymentDetailByTxnUUID(paymentUUID)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	} else if err == nil && paymentDetail.MerchantCode == "" { // the payment was not found
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	// merchant_code param must match with merchant code of the payment in db
+	if paymentDetail.MerchantCode != merchantCode {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, paymentDetail)
+}
+
 func validateCardWithBank(cardData entity.CardData) (AcqBank.CardValidResp, error) {
 	url := "/cards/validate"
 

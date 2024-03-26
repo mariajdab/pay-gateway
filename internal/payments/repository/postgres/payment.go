@@ -70,6 +70,7 @@ func (p *paymentRepo) GetPaymentDetailByTxUUID(txUUID string) (entity.PaymentInf
 		    pph.currency,
 		    pph.created_at,
 		    pph.status_tx as status,
+		    pph.merchant_code,
 		    c.first_name,
 		    c.last_name,
 		    c.email
@@ -81,8 +82,8 @@ func (p *paymentRepo) GetPaymentDetailByTxUUID(txUUID string) (entity.PaymentInf
 	`
 	if err := p.conn.QueryRow(ctx, sqlPaymentDetail, txUUID).Scan(
 		&payment.BillingAmount, &payment.Currency, &payment.CreateAt,
-		&payment.Status, &payment.CustomerData.FirstName, &payment.CustomerData.LastName,
-		&payment.CustomerData.Email); err != nil {
+		&payment.Status, &payment.MerchantCode, &payment.CustomerData.FirstName,
+		&payment.CustomerData.LastName, &payment.CustomerData.Email); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.PaymentInfo{}, nil
 		}
