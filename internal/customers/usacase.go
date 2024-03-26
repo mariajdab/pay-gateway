@@ -2,6 +2,6 @@ package customers
 
 import "github.com/mariajdab/pay-gateway/internal/entity"
 
-type UseCase interface {
-	CreateCustomer(c entity.Customer) (string, error)
+type UseCaseCustomer interface {
+	CreateCustomer(c entity.Customer) (int, error)
 }

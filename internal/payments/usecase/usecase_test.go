@@ -17,7 +17,7 @@ func TestValidatePaymentReq(t *testing.T) {
 
 	t.Run("payment request success: card is already in the system", func(t *testing.T) {
 
-		mockTask := entity.PaymentRequest{
+		mockPayReq := entity.PaymentRequest{
 			BillingAmount: 100,
 			Currency:      "USD",
 			CratedAt:      time.Now().UTC(),
@@ -36,13 +36,14 @@ func TestValidatePaymentReq(t *testing.T) {
 		}
 
 		ctk := cardToken("377673221487787")
-		mockCardRepository.On("CardInfoExists", ctk).Return(true, nil).Once()
+		mockCardRepository.On("GetCardBankUUID", ctk).Return("2455-5667-7746", nil).Once()
 
-		u := NewpaymentUC(mockPaymentRepository, mockCardRepository)
+		u := NewPaymentUC(mockPaymentRepository, mockCardRepository)
 
-		validate, err := u.ValidatePaymentReq(mockTask)
+		validateResp, err := u.ValidatePaymentReq(mockPayReq)
 		assert.NoError(t, err)
-		assert.Equal(t, validate, successfulValidation)
+		assert.Equal(t, validateResp.Status, entity.SuccessfulValidation)
+		assert.Equal(t, validateResp.CardTk, ctk)
 
 	})
 

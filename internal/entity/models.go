@@ -15,7 +15,6 @@ const (
 	// payment request statuses
 	PendingBankValidation = "request-bank-to-confirm-card"
 	SuccessfulValidation  = "pre-authorized-payment-req"
-	FailedValidation      = "payment-req-not-authorized"
 )
 
 type Customer struct {
@@ -76,7 +75,7 @@ type TxnInfo struct {
 
 func (c Card) Validate() error {
 	return v.ValidateStruct(&c,
-		v.Field(&c.Number, v.Required, is.CreditCard),         // make a simple credit number validation
+		v.Field(&c.Number, v.Required, is.CreditCard),         // make a simple card number validation
 		v.Field(&c.CVV, v.Required, v.Length(3, 3)),           // cvv should be of 3 characters
 		v.Field(&c.ExpDate, v.Required, v.Date("2006-01-02")), // should have a format date
 	)
@@ -90,4 +89,10 @@ func (c Customer) Validate() error {
 		v.Field(&c.Address, v.Required, v.Length(4, 18)),   // // min and max length limitation
 		v.Field(&c.Country, v.Required, is.CountryCode3),   // countryCode3 eg: VEN, MEX, COL
 	)
+}
+
+type PaymtValidateResp struct {
+	CardTk       string
+	CardUUIDBank string
+	Status       string
 }

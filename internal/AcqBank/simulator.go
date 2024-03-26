@@ -1,17 +1,17 @@
 package AcqBank
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/mariajdab/pay-gateway/internal/entity"
-	"net/http"
-	"strconv"
 )
 
 const (
 	approved = 2020
 	declined = 9999
-	pending  = 8585
 )
 
 type TxnResp struct {
@@ -26,12 +26,10 @@ type CardValidResp struct {
 type Handler struct{}
 
 func RegisterHTTPEndpoints(g *gin.Engine, handler *Handler) {
-
-	payment := g.Group("/bank-sim.com")
+	payment := g.Group("/bank-sim")
 	{
 		payment.POST("/transactions/validate", handler.checkTxn)
 		payment.POST("/cards/validate", handler.validateCard)
-
 	}
 }
 
@@ -52,11 +50,7 @@ func (h *Handler) checkTxn(ctx *gin.Context) {
 	lastCharCard := string(cardUUID[len(cardUUID)-1])
 
 	if isLastCharacterInt(lastCharCard) {
-		if isOddNumber(lastCharCard) {
-			checkTxRp.Status = pending // pending for odd numbers
-		} else {
-			checkTxRp.Status = declined // decline for even numbers
-		}
+		checkTxRp.Status = declined // decline for even numbers
 	} else { // if the last character in the cardUUID is a letter, then approve the txn
 		checkTxRp.Status = approved
 	}

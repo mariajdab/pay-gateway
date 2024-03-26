@@ -14,7 +14,7 @@ type paymentRepo struct {
 	conn *pgxpool.Pool
 }
 
-func NewPaymentProcessor(conn *pgxpool.Pool) payments.RepositoryPayment {
+func NewPaymentRepo(conn *pgxpool.Pool) payments.RepositoryPayment {
 	return &paymentRepo{conn: conn}
 }
 

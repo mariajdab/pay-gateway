@@ -9,12 +9,6 @@ import (
 	"github.com/mariajdab/pay-gateway/internal/merchant"
 )
 
-const (
-	// merchant validation"
-	allowedMerchant = "merchant-allowed"
-	deniedMerchant  = "merchant-not-allowed"
-)
-
 type merchantUC struct {
 	merchantRepo merchant.RepositoryMerchant
 }
@@ -42,15 +36,14 @@ func (muc *merchantUC) ValidateMerchant(merchantCode string) (string, error) {
 	merchantExists, err := muc.merchantRepo.MerchantCodeExists(merchantCode)
 	if err != nil {
 		// internal error of the app
-		return deniedMerchant, err
+		return entity.DeniedMerchant, err
 	}
 
 	if !merchantExists {
-		return deniedMerchant, nil
+		return entity.DeniedMerchant, nil
 	}
 
-	return allowedMerchant, nil
-
+	return entity.AllowedMerchant, nil
 }
 
 func generateRandomStr() (string, error) {

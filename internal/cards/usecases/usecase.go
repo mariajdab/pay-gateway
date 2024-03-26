@@ -8,12 +8,12 @@ type cardUC struct {
 	cardRepo cards.RepositoryCard
 }
 
-func NewCardUC(c cards.RepositoryCard) cards.UseCase {
+func NewCardUC(c cards.RepositoryCard) cards.UseCaseCard {
 	return &cardUC{
 		cardRepo: c,
 	}
 }
 
-func (c *cardUC) SaveCardInfo(cardToken, cardBankUUID, expDate string, customerID uint32) error {
+func (c *cardUC) SaveCardInfo(cardToken, cardBankUUID, expDate string, customerID int) error {
 	return c.cardRepo.AddCardDetail(cardToken, cardBankUUID, expDate, customerID)
 }

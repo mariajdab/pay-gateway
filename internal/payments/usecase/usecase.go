@@ -3,6 +3,7 @@ package usecase
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"github.com/google/uuid"
 	"github.com/mariajdab/pay-gateway/internal/cards"
 	"time"
 
@@ -11,69 +12,79 @@ import (
 	"github.com/mariajdab/pay-gateway/internal/payments"
 )
 
-const (
-	// currencies we currently accept
-	currencyUSD = "USD"
-
-	// payment request statuses
-	pendingBankValidation = "request-bank-to-confirm-card"
-	successfulValidation  = "pre-authorized-payment-req"
-	failedValidation      = "payment-req-not-authorized"
-	unableValidation      = "unable-to-pre-authorize"
-)
+const currencyUSD = "USD" // currency we accept
 
 type paymentUC struct {
 	paymentRepo payments.RepositoryPayment
 	cardRepo    cards.RepositoryCard
 }
 
-func NewpaymentUC(py payments.RepositoryPayment, c cards.RepositoryCard) payments.UseCasePayment {
+func NewPaymentUC(py payments.RepositoryPayment, card cards.RepositoryCard) payments.UseCasePayment {
 	return &paymentUC{
 		paymentRepo: py,
-		cardRepo:    c,
+		cardRepo:    card,
 	}
 }
 
-func (p *paymentUC) ValidatePaymentReq(paymtReq entity.PaymentRequest) (string, error) {
-	if err := v.ValidateStruct(&paymtReq,
-		// Card validation
-		v.Field(&paymtReq.CardInfo), // for more detail see validate method for entity.Card
-
+func (p *paymentUC) ValidatePaymentReq(paymtReq entity.PaymentRequest) (entity.PaymtValidateResp, error) {
+	err := v.ValidateStruct(&paymtReq,
 		// General payment req validation
 		v.Field(&paymtReq.BillingAmount, v.Required, v.Min(0.01)),  // a valid amount must be >= 0.01
 		v.Field(&paymtReq.Currency, v.Required, v.In(currencyUSD)), // at the moment we only accept USD as currency
 		v.Field(&paymtReq.CratedAt, v.Required),
-
+		// Card validation
+		v.Field(&paymtReq.CardInfo), // for more detail see the validate method for entity.Card
 		// Customer validation
-		v.Field(&paymtReq.CustomerData), // for more detail see validate method for entity.Customer
-	); err != nil {
-		return failedValidation, err
+		v.Field(&paymtReq.CustomerData), // for more detail see then validate method for entity.Customer
+	)
+
+	if err != nil {
+		return entity.PaymtValidateResp{}, err
 	}
 
 	// check if the card is expired
 	expDateT, err := time.Parse("2006-01-02", paymtReq.CardInfo.ExpDate)
 	if err != nil {
-		return unableValidation, err
+		return entity.PaymtValidateResp{}, err
 	}
 
 	if isCardExpired(expDateT) {
-		return failedValidation, nil
+		return entity.PaymtValidateResp{}, nil
 	}
 
 	// get the card token from the card number
 	cardTk := cardToken(paymtReq.CardInfo.Number)
 
-	// check if it is the first payment made with the card in the payment processor
-	cardExists, err := p.cardRepo.CardInfoExists(cardTk)
+	// if it's the first payment made with the card in the payment processor
+	// then cardUUIDBank is not in the db
+	cardUUIDBank, err := p.cardRepo.GetCardBankUUID(cardTk)
 	if err != nil {
-		return unableValidation, err
+		return entity.PaymtValidateResp{}, err
 	}
 
-	if !cardExists {
-		return pendingBankValidation, nil
+	if cardUUIDBank == "" {
+		return entity.PaymtValidateResp{
+			Status: entity.PendingBankValidation,
+			CardTk: cardTk,
+		}, nil
 	}
 
-	return successfulValidation, nil
+	return entity.PaymtValidateResp{
+		Status: entity.SuccessfulValidation,
+		CardTk: cardTk,
+	}, nil
+}
+
+// SavePaymentInfo saves the useful information about the payment
+func (p *paymentUC) SavePaymentInfo(txn entity.Transaction) (string, error) {
+	// create the uuid associated with the payment that could be used by the merchant
+	txn.TxnUUID = uuid.New().String()
+
+	if err := p.paymentRepo.AddPaymentTxnHistory(txn); err != nil {
+		return "", err
+	}
+
+	return txn.TxnUUID, nil
 }
 
 // isCardExpired checks if the card expiration date is valid
