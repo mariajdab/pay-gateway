@@ -33,8 +33,9 @@ func RegisterHTTPEndpoints(g *gin.Engine, handler *Handler) {
 	}
 }
 
-// checkTxn handle the simulation logic to check if a transaction in the bank
-// is approved, declined or pending for a card associated with an uuid
+// checkTxn handle the simulation logic to check if a transaction
+// is approved, declined or pending by the bank "using" the card info
+// associated with an account
 func (h *Handler) checkTxn(ctx *gin.Context) {
 	// TxnInfo have the necessary information to
 	// check if the account associated with the card
@@ -98,13 +99,4 @@ func isLastCharacterInt(lastChar string) bool {
 	} else {
 		return false
 	}
-}
-
-func isOddNumber(lastChar string) bool {
-	// should not be an error
-	v, _ := strconv.Atoi(lastChar)
-	if v%2 > 0 {
-		return true
-	}
-	return false
 }

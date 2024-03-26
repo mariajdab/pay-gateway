@@ -15,7 +15,7 @@ func TestValidatePaymentReq(t *testing.T) {
 
 	d := time.Date(2025, 05, 01, 0, 0, 0, 0, time.UTC).Format(time.DateOnly)
 
-	t.Run("payment request success: card is already in the system", func(t *testing.T) {
+	t.Run("payment request success with card already in the system", func(t *testing.T) {
 
 		mockPayReq := entity.PaymentRequest{
 			BillingAmount: 100,
