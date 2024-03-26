@@ -10,7 +10,7 @@ type RepositoryCard struct {
 }
 
 // AddCardDetail provides a mock function with given fields: cardToken, cardBankUUID, expDate, customerID
-func (_m *RepositoryCard) AddCardDetail(cardToken string, cardBankUUID string, expDate string, customerID uint32) error {
+func (_m *RepositoryCard) AddCardDetail(cardToken string, cardBankUUID string, expDate string, customerID int) error {
 	ret := _m.Called(cardToken, cardBankUUID, expDate, customerID)
 
 	if len(ret) == 0 {
@@ -18,7 +18,7 @@ func (_m *RepositoryCard) AddCardDetail(cardToken string, cardBankUUID string, e
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, string, uint32) error); ok {
+	if rf, ok := ret.Get(0).(func(string, string, string, int) error); ok {
 		r0 = rf(cardToken, cardBankUUID, expDate, customerID)
 	} else {
 		r0 = ret.Error(0)
@@ -27,37 +27,9 @@ func (_m *RepositoryCard) AddCardDetail(cardToken string, cardBankUUID string, e
 	return r0
 }
 
-// CardInfoExists provides a mock function with given fields: cardTk
-func (_m *RepositoryCard) CardInfoExists(cardTk string) (bool, error) {
+// GetCardBankUUID provides a mock function with given fields: cardTk
+func (_m *RepositoryCard) GetCardBankUUID(cardTk string) (string, error) {
 	ret := _m.Called(cardTk)
-
-	if len(ret) == 0 {
-		panic("no return value specified for CardInfoExists")
-	}
-
-	var r0 bool
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string) (bool, error)); ok {
-		return rf(cardTk)
-	}
-	if rf, ok := ret.Get(0).(func(string) bool); ok {
-		r0 = rf(cardTk)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(cardTk)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetCardBankUUID provides a mock function with given fields: cardUUIDtk
-func (_m *RepositoryCard) GetCardBankUUID(cardUUIDtk string) (string, error) {
-	ret := _m.Called(cardUUIDtk)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetCardBankUUID")
@@ -66,16 +38,16 @@ func (_m *RepositoryCard) GetCardBankUUID(cardUUIDtk string) (string, error) {
 	var r0 string
 	var r1 error
 	if rf, ok := ret.Get(0).(func(string) (string, error)); ok {
-		return rf(cardUUIDtk)
+		return rf(cardTk)
 	}
 	if rf, ok := ret.Get(0).(func(string) string); ok {
-		r0 = rf(cardUUIDtk)
+		r0 = rf(cardTk)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(cardUUIDtk)
+		r1 = rf(cardTk)
 	} else {
 		r1 = ret.Error(1)
 	}
