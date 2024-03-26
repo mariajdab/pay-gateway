@@ -17,17 +17,20 @@ func NewCustomerRepo(conn *pgxpool.Pool) customers.RepositoryCustomer {
 }
 
 // AddCustomer saves the customer info associated with a card
-func (c *customerRepo) AddCustomer(customer entity.Customer) error {
+func (c *customerRepo) AddCustomer(customer entity.Customer) (int, error) {
 	ctx := context.Background()
+	var customerID int
 
-	_, err := c.conn.Exec(ctx, `
+	if err := c.conn.QueryRow(ctx, `
 		INSERT INTO customers (first_name, last_name, email, address, country)
-		VALUES ($1, $2, $3, $4)
+		VALUES ($1, $2, $3, $4) RETURNING id
 		`,
 		customer.FirstName,
 		customer.LastName,
 		customer.Email,
-		customer.Address)
+		customer.Address).Scan(&customerID); err != nil {
+		return 0, err
+	}
 
-	return err
+	return customerID, nil
 }
