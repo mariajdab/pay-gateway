@@ -3,13 +3,14 @@ package AcqBank
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/mariajdab/pay-gateway/internal/entity"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/mariajdab/pay-gateway/internal/entity"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCheckTxnApproved(t *testing.T) {
@@ -29,7 +30,7 @@ func TestCheckTxnApproved(t *testing.T) {
 	body, err := json.Marshal(&txnInfo)
 	assert.NoError(t, err)
 
-	req, _ := http.NewRequest("POST", "/bank-sim.com/transactions/validate", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "/bank-sim/transactions/validate", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
@@ -60,7 +61,7 @@ func TestCheckTxnDeclined(t *testing.T) {
 	body, err := json.Marshal(&txnInfo)
 	assert.NoError(t, err)
 
-	req, _ := http.NewRequest("POST", "/bank-sim.com/transactions/validate", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "/bank-sim/transactions/validate", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
@@ -101,7 +102,7 @@ func TestValidateCardOK(t *testing.T) {
 	assert.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/bank-sim.com/cards/validate", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "/bank-sim/cards/validate", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
@@ -145,7 +146,7 @@ func TestValidateCardInvalid(t *testing.T) {
 	assert.NoError(t, err)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/bank-sim.com/cards/validate", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", "/bank-sim/cards/validate", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, 200, w.Code)
