@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+
+  payment-gateway-db:
+    container_name: payment-gateway-db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+       - ./data:/var/lib/postgresql/data
+       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  payment-gateway:
+    container_name: payment-gateway
+    depends_on:
+      - payment-gateway-db
+    restart: always
+    environment:
+      DB_SOURCE: postgres://postgres:postgres@payment-gateway-db:5432/postgres
+    ports:
+      - 8080:8080
+    build:
+      context: ./payment-gateway-processor
+      dockerfile: Dockerfile
+
+  bank-sim:
+    container_name: bank-sim
+    depends_on:
+      - payment-gateway
+    restart: always
+    ports:
+      - 9090:9090
+    build:
+      context: ./AcqBank
+      dockerfile: Dockerfile
