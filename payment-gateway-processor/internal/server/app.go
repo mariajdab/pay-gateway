@@ -2,7 +2,13 @@ package server
 
 import (
 	"context"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mariajdab/pay-gateway/internal/cards"
 	cardsDBStorage "github.com/mariajdab/pay-gateway/internal/cards/repository/postgres"
 	cardUseCase "github.com/mariajdab/pay-gateway/internal/cards/usecases"
@@ -16,12 +22,6 @@ import (
 	paymentHttp "github.com/mariajdab/pay-gateway/internal/payments/delivery"
 	paymentDBStorage "github.com/mariajdab/pay-gateway/internal/payments/repository/postgres"
 	paymentUseCase "github.com/mariajdab/pay-gateway/internal/payments/usecase"
-	"log"
-	"net/http"
-	"os"
-	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type App struct {

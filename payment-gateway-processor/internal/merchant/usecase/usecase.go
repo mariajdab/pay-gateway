@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
+
 	"github.com/mariajdab/pay-gateway/internal/entity"
 	"github.com/mariajdab/pay-gateway/internal/merchant"
 )

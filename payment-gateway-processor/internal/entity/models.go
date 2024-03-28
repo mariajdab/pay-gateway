@@ -8,10 +8,6 @@ import (
 )
 
 const (
-	// merchant validation
-	AllowedMerchant = "merchant-allowed"
-	DeniedMerchant  = "merchant-not-allowed"
-
 	// payment request statuses
 	PendingBankValidation = "request-bank-to-confirm-card"
 	SuccessfulValidation  = "pre-authorized-payment-req"

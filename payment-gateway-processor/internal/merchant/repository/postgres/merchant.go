@@ -3,11 +3,11 @@ package postgres
 import (
 	"context"
 	"errors"
-	"github.com/mariajdab/pay-gateway/internal/entity"
-	"github.com/mariajdab/pay-gateway/internal/merchant"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/mariajdab/pay-gateway/internal/entity"
+	"github.com/mariajdab/pay-gateway/internal/merchant"
 )
 
 type merchantRepo struct {

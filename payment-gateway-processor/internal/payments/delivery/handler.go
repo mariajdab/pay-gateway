@@ -4,16 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/mariajdab/pay-gateway/internal/entity/util"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/mariajdab/pay-gateway/internal/cards"
 	"github.com/mariajdab/pay-gateway/internal/customers"
 	"github.com/mariajdab/pay-gateway/internal/entity"
+	"github.com/mariajdab/pay-gateway/internal/entity/util"
 	"github.com/mariajdab/pay-gateway/internal/merchant"
 	"github.com/mariajdab/pay-gateway/internal/payments"
 )

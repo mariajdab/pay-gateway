@@ -2,10 +2,10 @@ package postgres
 
 import (
 	"context"
-	"github.com/mariajdab/pay-gateway/internal/customers"
-	"github.com/mariajdab/pay-gateway/internal/entity"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/mariajdab/pay-gateway/internal/customers"
+	"github.com/mariajdab/pay-gateway/internal/entity"
 )
 
 type customerRepo struct {

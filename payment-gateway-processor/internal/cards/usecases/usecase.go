@@ -1,8 +1,6 @@
 package usecases
 
-import (
-	"github.com/mariajdab/pay-gateway/internal/cards"
-)
+import "github.com/mariajdab/pay-gateway/internal/cards"
 
 type cardUC struct {
 	cardRepo cards.RepositoryCard

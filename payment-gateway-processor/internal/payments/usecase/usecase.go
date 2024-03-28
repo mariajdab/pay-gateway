@@ -3,14 +3,14 @@ package usecase
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"github.com/mariajdab/pay-gateway/internal/cards"
-	"github.com/mariajdab/pay-gateway/internal/entity"
-	"github.com/mariajdab/pay-gateway/internal/merchant"
-	payments2 "github.com/mariajdab/pay-gateway/internal/payments"
 	"log"
 	"time"
 
 	v "github.com/go-ozzo/ozzo-validation"
+	"github.com/mariajdab/pay-gateway/internal/cards"
+	"github.com/mariajdab/pay-gateway/internal/entity"
+	"github.com/mariajdab/pay-gateway/internal/merchant"
+	"github.com/mariajdab/pay-gateway/internal/payments"
 )
 
 const (
@@ -18,12 +18,12 @@ const (
 )
 
 type paymentUC struct {
-	paymentRepo  payments2.RepositoryPayment
+	paymentRepo  payments.RepositoryPayment
 	cardRepo     cards.RepositoryCard
 	merchantRepo merchant.RepositoryMerchant
 }
 
-func NewPaymentUC(py payments2.RepositoryPayment, card cards.RepositoryCard, merchant merchant.RepositoryMerchant) payments2.UseCasePayment {
+func NewPaymentUC(py payments.RepositoryPayment, card cards.RepositoryCard, merchant merchant.RepositoryMerchant) payments.UseCasePayment {
 	return &paymentUC{
 		paymentRepo:  py,
 		cardRepo:     card,
@@ -32,7 +32,6 @@ func NewPaymentUC(py payments2.RepositoryPayment, card cards.RepositoryCard, mer
 }
 
 func (p *paymentUC) ValidatePaymentReq(paymtReq entity.PaymentRequest) (entity.PaymtValidateResp, error) {
-	log.Println("entra a validar")
 	err := v.ValidateStruct(&paymtReq,
 		// General payment req validation
 		v.Field(&paymtReq.BillingAmount, v.Required, v.Min(0.01)),  // a valid amount must be >= 0.01
