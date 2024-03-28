@@ -6,6 +6,10 @@ This project attempt to create online payment platform to help e-commerces busin
 
 ### Desing
 
+- DB Desing
+
+![tables](https://github.com/mariajdab/pay-gateway/blob/main/database-diagrams.svg)
+
 
 
 
@@ -108,8 +112,14 @@ git clone https://github.com/mariajdab/pay-gateway.git
 Copy and run the command ```docker-compose up --build```
 
 #### What happened!? 🚀
-
-
+The merchants table needs some entries so the `init.sql` will run to add 2 merchants to the db in order to be able to use the api endpoints 
+```
+INSERT INTO merchants (name, code, account)
+VALUES ('tienda-1', '1234#', 'sjlgjljsg934t93tial');
+INSERT INTO merchants (name, code, account)
+VALUES ('levis', '33342#', '242598fjslflj9320xd');
+````
+The server for the payment gateway will be enabled and also the server that represents the bank simulation
 
 
 
