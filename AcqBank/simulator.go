@@ -30,6 +30,13 @@ type CardValidateReq struct {
 	GatwyPamtUUID string `json:"gatwy_pamt_uuid"`
 }
 
+type TxnInfo struct {
+	CardInfoEncrypted []byte  `json:"card_info_encrypted"`
+	Amount            float32 `json:"amount"`
+	Currency          string  `json:"currency"`
+	MerchantAccount   string  `json:"merchant_account"`
+}
+
 type Handler struct{}
 
 func RegisterHTTPEndpoints(g *gin.Engine) {
