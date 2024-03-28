@@ -2,15 +2,13 @@
 
 ### Overview
 
-This project attempt to create online payment platform to help e-commerces businesses. To show a 'real' process, we will have two servers opened: one for Bank simulation, related to bank responses, for example, to create a new transaction for card/account or validate a card information; the other server is related to the payment platform, it should be able to process payments, retrieve past payment linked to a txnUUID and make refunds. 
+This project attempts to create an online payment platform to help e-commerce businesses. To show a 'real' process, we will have two servers opened: one for bank simulation, related to bank responses, for example, to create a new transaction for card/account or validate card information; the other server is related to the payment platform. It should be able to process payments, retrieve past payments linked to a txnUUID, and make refunds. 
 
 ### Desing
 
 - DB Desing
 
 ![tables](https://github.com/mariajdab/pay-gateway/blob/main/database-diagrams.svg)
-
-
 
 
 ### API Endpoints Payment Platform 
@@ -84,6 +82,16 @@ Reponse example:
 ###### Refund a Payment: 
 ##### [POST] http://localhost:8080/processor-pay/payments/refund
 
+Request body example
+```
+{
+"amount": 50,
+"txn_uuid": "6fc49459-81a3-4d00-a163-1356171cf10e",
+"merchant_code": "1234#"
+
+}
+```
+
 Response example: 
 ```
 {
@@ -92,17 +100,16 @@ Response example:
 }
 ```
 
-### Note: 
-
-The data should be "almost valid" 
-
-  1. The `card number` format is validated (you could use a card number generator online), `cvv` have length equal to 3, `expiration card` should be a date 
-
-  2. The customer or card owner information is also validated: `email` should have a valid format, `first name` and `last name` with a max of 10 and 12, `address` max leght of 18 and `country` shoud have alpha3Code format, for example: MEX, COL, BRA, etc
-
-  3. At the moment the payment platform only accept USD as `currency` and with a minimum amount of `0.01`
-
 <br>
+
+#### Bank Simulator:
+
+It handles the simulation response from a bank and not the real logic. For that it have a server active with two endpoints to be called for 
+the payment gateway. One endpoint related to validate a card information and the other to try to create a transaction. 
+The simulation code tried to be "deterministic", for example to create a transaction the bank code only check the amount request and if it is 
+an even number the txn is declined by the "bank", similar case happen for the refund response. In the other hand the validate card
+handler use another "simulation logic", and it depends on the `gatwy_pamt_uuid` that is created before send the validation card request to the bank,
+so the card will be invalid in the case the uuid ends with a number and valid when is a letter. More detail could be found the file `simulator_test.go` 
 
 ## Starting 🚀
 
