@@ -50,9 +50,6 @@ func (h *Handler) createTxn(ctx *gin.Context) {
 	// TxnInfo have the necessary information to
 	// check if the account associated with the card
 	// has enough balance to approve or not the tx.
-	// The cardUUIDTk simulates the "token" that the "bank gives to the
-	// payment-gateway" to check a txn with a card,ando not needed to
-	// pass all the information of the owner card and detail card
 	txnInfo := new(TxnInfo)
 	if err := ctx.BindJSON(txnInfo); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
@@ -80,7 +77,6 @@ func (h *Handler) createTxn(ctx *gin.Context) {
 // validateCard handle the simulation logic to check if a card
 // is a valid bank card
 func (h *Handler) validateCard(ctx *gin.Context) {
-	// the card info received encrypted with "id for the payment gateway"
 	cardData := new(CardValidateReq)
 	if err := ctx.BindJSON(cardData); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
